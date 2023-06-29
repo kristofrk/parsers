@@ -1,14 +1,26 @@
-name: test-action-javascript
-on: push
+name: test-actions
+on:
+  push:
 jobs:
   myJob:
     runs-on: ubuntu-latest
     steps:
-      - name: Cryptosoft-SBOM-generator.
-        id: Cryptosoft-SBOM-generator
-        uses: CryptosoftInc/Dependency-Track@1.0.0
-        with:
-          dt-url:  "https://dt-api-kkloeckner-llc.staging.cryptosoft.com/api/v1/bom"
-          api-key: 'yx2ZOrANGcuYonKkkeXcOQp77xT2XqvA '
-          project-name: "Testproject2"
-          project-version: "1.0"
+      - uses: actions/checkout@v2
+      - name: Setup Python
+        uses: actions/setup-python@v3.1.4
+      - name: Install tool
+        run: pip install cyclonedx-bom 
+      - name: Generate BOM
+        id: sbom
+        run: |
+             cyclonedx-py --poetry --format xml -o sbom.xml
+             
+      - name: Submit SBOM
+        run: |
+          curl -k -X POST "https://dt-api-kkloeckner-llc.staging.cryptosoft.com/api/v1/bom" \
+            -H "Content-Type: multipart/form-data" \
+            -H "X-Api-Key:'yx2ZOrANGcuYonKkkeXcOQp77xT2XqvA '" \
+            -F "autoCreate=true" \
+            -F "projectName=Testproject2" \
+            -F "projectVersion=1.2.2" \
+            -F "bom=@sbom.xml"
