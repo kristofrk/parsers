@@ -22,5 +22,5 @@ jobs:
             -H "X-Api-Key:'yx2ZOrANGcuYonKkkeXcOQp77xT2XqvA '" \
             -F "autoCreate=true" \
             -F "projectName=Testproject2" \
-            -F "projectVersion=1.2.2" \
+            -F "projectVersion=1.0" \
             -F "bom=@sbom.xml"
